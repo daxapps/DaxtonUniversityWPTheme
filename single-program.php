@@ -41,6 +41,10 @@
             )
           ));
 
+          if ($homepageEvents->have_posts()) {
+            echo '<hr class="section-break">';
+          echo '<h2 class="headline headline--medium">Upcoming ' . get_the_title() . ' Events</h2>';
+
           while ($homepageEvents->have_posts()) {
             $homepageEvents->the_post(); ?>
             <div class="event-summary">
@@ -55,10 +59,13 @@
                   echo get_the_excerpt();
                 } else {
                   echo wp_trim_words(get_the_content(), 18);
-                } ?><a href="<?php the_permalink(); ?>" class="nu gray">Read more</a></p>
+                } ?><a href="<?php the_permalink(); ?>" class="nu gray">Learn more</a></p>
               </div>
             </div>
-          <?php } wp_reset_postdata();
+          <?php }
+          }
+
+          //  wp_reset_postdata();
         ?>
 
     </div>
