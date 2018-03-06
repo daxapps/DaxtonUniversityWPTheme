@@ -13610,6 +13610,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var Search =
 /*#__PURE__*/
 function () {
+  // 1. describe and create/initiate our object
   function Search() {
     _classCallCheck(this, Search);
 
@@ -13624,7 +13625,8 @@ function () {
     this.isSpinnerVisible = false;
     this.previousValue;
     this.typingTimer;
-  }
+  } // 2. events
+
 
   _createClass(Search, [{
     key: "events",
@@ -13633,7 +13635,8 @@ function () {
       this.closeButton.on("click", this.closeOverlay.bind(this));
       (0, _jquery.default)(document).on("keydown", this.keyPressDispatcher.bind(this));
       this.searchField.on("keyup", this.typingLogic.bind(this));
-    }
+    } // 3. methods (function, action...)
+
   }, {
     key: "typingLogic",
     value: function typingLogic() {
@@ -13646,7 +13649,7 @@ function () {
             this.isSpinnerVisible = true;
           }
 
-          this.typingTimer = setTimeout(this.getResults.bind(this), 700);
+          this.typingTimer = setTimeout(this.getResults.bind(this), 750);
         } else {
           this.resultsDiv.html('');
           this.isSpinnerVisible = false;
@@ -13660,26 +13663,28 @@ function () {
     value: function getResults() {
       var _this = this;
 
-      _jquery.default.when(_jquery.default.getJSON(universityData.root_url + '/wp-json/wp/v2/posts?search=' + this.searchField.val()), _jquery.default.getJSON(universityData.root_url + '/wp-json/wp/v2/pages?search=' + this.searchField.val())).then(function (posts, pages) {
-        var combinedResults = posts[0].concat(pages[0]);
-
-        _this.resultsDiv.html("\n        <h2 class=\"search-overlay__section-title\">General Information</h2>\n        ".concat(combinedResults.length ? '<ul class="link-list min-list">' : '<p>No general information matches that search.</p>', "\n          ").concat(combinedResults.map(function (item) {
-          return "<li><a href=\"".concat(item.link, "\">").concat(item.title.rendered, "</a> ").concat(item.type == 'post' ? "by ".concat(item.authorName) : '', "</li>");
-        }).join(''), "\n        ").concat(combinedResults.length ? '</ul>' : '', "\n      "));
+      _jquery.default.getJSON(universityData.root_url + '/wp-json/university/v1/search?term=' + this.searchField.val(), function (results) {
+        _this.resultsDiv.html("\n        <div class=\"row\">\n          <div class=\"one-third\">\n            <h2 class=\"search-overlay__section-title\">General Information</h2>\n            ".concat(results.generalInfo.length ? '<ul class="link-list min-list">' : '<p>No general information matches that search.</p>', "\n              ").concat(results.generalInfo.map(function (item) {
+          return "<li><a href=\"".concat(item.permalink, "\">").concat(item.title, "</a> ").concat(item.postType == 'post' ? "by ".concat(item.authorName) : '', "</li>");
+        }).join(''), "\n            ").concat(results.generalInfo.length ? '</ul>' : '', "\n          </div>\n          <div class=\"one-third\">\n            <h2 class=\"search-overlay__section-title\">Programs</h2>\n            ").concat(results.programs.length ? '<ul class="link-list min-list">' : "<p>No programs match that search. <a href=\"".concat(universityData.root_url, "/programs\">View all programs</a></p>"), "\n              ").concat(results.programs.map(function (item) {
+          return "<li><a href=\"".concat(item.permalink, "\">").concat(item.title, "</a></li>");
+        }).join(''), "\n            ").concat(results.programs.length ? '</ul>' : '', "\n\n            <h2 class=\"search-overlay__section-title\">Professors</h2>\n            ").concat(results.professors.length ? '<ul class="professor-cards">' : "<p>No professors match that search.</p>", "\n              ").concat(results.professors.map(function (item) {
+          return "\n                <li class=\"professor-card__list-item\">\n                  <a class=\"professor-card\" href=\"".concat(item.permalink, "\">\n                    <img class=\"professor-card__image\" src=\"").concat(item.image, "\">\n                    <span class=\"professor-card__name\">").concat(item.title, "</span>\n                  </a>\n                </li>\n              ");
+        }).join(''), "\n            ").concat(results.professors.length ? '</ul>' : '', "\n\n          </div>\n          <div class=\"one-third\">\n            <h2 class=\"search-overlay__section-title\">Campuses</h2>\n            ").concat(results.campuses.length ? '<ul class="link-list min-list">' : "<p>No campuses match that search. <a href=\"".concat(universityData.root_url, "/campuses\">View all campuses</a></p>"), "\n              ").concat(results.campuses.map(function (item) {
+          return "<li><a href=\"".concat(item.permalink, "\">").concat(item.title, "</a></li>");
+        }).join(''), "\n            ").concat(results.campuses.length ? '</ul>' : '', "\n\n            <h2 class=\"search-overlay__section-title\">Events</h2>\n            ").concat(results.events.length ? '' : "<p>No events match that search. <a href=\"".concat(universityData.root_url, "/events\">View all events</a></p>"), "\n              ").concat(results.events.map(function (item) {
+          return "\n                <div class=\"event-summary\">\n                  <a class=\"event-summary__date t-center\" href=\"".concat(item.permalink, "\">\n                    <span class=\"event-summary__month\">").concat(item.month, "</span>\n                    <span class=\"event-summary__day\">").concat(item.day, "</span>  \n                  </a>\n                  <div class=\"event-summary__content\">\n                    <h5 class=\"event-summary__title headline headline--tiny\"><a href=\"").concat(item.permalink, "\">").concat(item.title, "</a></h5>\n                    <p>").concat(item.description, " <a href=\"").concat(item.permalink, "\" class=\"nu gray\">Learn more</a></p>\n                  </div>\n                </div>\n              ");
+        }).join(''), "\n\n          </div>\n        </div>\n      "));
 
         _this.isSpinnerVisible = false;
-      }, function () {
-        _this.resultsDiv.html('<p>Unexpected error; please try again.</p>');
       });
     }
   }, {
     key: "keyPressDispatcher",
     value: function keyPressDispatcher(e) {
-      // 's' key
       if (e.keyCode == 83 && !this.isOverlayOpen && !(0, _jquery.default)("input, textarea").is(':focus')) {
         this.openOverlay();
-      } // 'esc' key
-
+      }
 
       if (e.keyCode == 27 && this.isOverlayOpen) {
         this.closeOverlay();
@@ -13696,6 +13701,7 @@ function () {
       setTimeout(function () {
         return _this2.searchField.focus();
       }, 301);
+      console.log("our open method just ran!");
       this.isOverlayOpen = true;
     }
   }, {
@@ -13703,12 +13709,13 @@ function () {
     value: function closeOverlay() {
       this.searchOverlay.removeClass("search-overlay--active");
       (0, _jquery.default)("body").removeClass("body-no-scroll");
+      console.log("our close method just ran!");
       this.isOverlayOpen = false;
     }
   }, {
     key: "addSearchHTML",
     value: function addSearchHTML() {
-      (0, _jquery.default)("body").append("\n      <div class=\"search-overlay\">\n        <div class=\"search-overlay__top\">\n          <div class=\"container\">\n            <i class=\"fa fa-search search-overlay__icon\" aria-hidden=\"true\"></i>\n            <input type=\"text\" class=\"search-term\" placeholder=\"What are you looking for?\" id=\"search-term\">\n            <i class=\"fa fa-window-close search-overlay__close\" aria-hidden=\"true\"></i>\n          </div>\n        </div>\n        \n        <div class=\"container\">\n          <div id=\"search-overlay__results\"></div>\n        </div>\n      </div>\n    ");
+      (0, _jquery.default)("body").append("\n      <div class=\"search-overlay\">\n        <div class=\"search-overlay__top\">\n          <div class=\"container\">\n            <i class=\"fa fa-search search-overlay__icon\" aria-hidden=\"true\"></i>\n            <input type=\"text\" class=\"search-term\" placeholder=\"What are you looking for?\" id=\"search-term\">\n            <i class=\"fa fa-window-close search-overlay__close\" aria-hidden=\"true\"></i>\n          </div>\n        </div>\n        \n        <div class=\"container\">\n          <div id=\"search-overlay__results\"></div>\n        </div>\n\n      </div>\n    ");
     }
   }]);
 
