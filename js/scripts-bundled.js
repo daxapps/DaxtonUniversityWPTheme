@@ -13613,6 +13613,7 @@ function () {
   function Search() {
     _classCallCheck(this, Search);
 
+    this.addSearchHTML();
     this.resultsDiv = (0, _jquery.default)("#search-overlay__results");
     this.openButton = (0, _jquery.default)(".js-search-trigger");
     this.closeButton = (0, _jquery.default)(".search-overlay__close");
@@ -13645,7 +13646,7 @@ function () {
             this.isSpinnerVisible = true;
           }
 
-          this.typingTimer = setTimeout(this.getResults.bind(this), 2000);
+          this.typingTimer = setTimeout(this.getResults.bind(this), 700);
         } else {
           this.resultsDiv.html('');
           this.isSpinnerVisible = false;
@@ -13683,18 +13684,27 @@ function () {
   }, {
     key: "openOverlay",
     value: function openOverlay() {
+      var _this2 = this;
+
       this.searchOverlay.addClass("search-overlay--active");
-      console.log("overlay is open");
       (0, _jquery.default)("body").addClass("body-no-scroll");
+      this.searchField.val('');
+      setTimeout(function () {
+        return _this2.searchField.focus();
+      }, 301);
       this.isOverlayOpen = true;
     }
   }, {
     key: "closeOverlay",
     value: function closeOverlay() {
       this.searchOverlay.removeClass("search-overlay--active");
-      console.log("overlay is closed");
       (0, _jquery.default)("body").removeClass("body-no-scroll");
       this.isOverlayOpen = false;
+    }
+  }, {
+    key: "addSearchHTML",
+    value: function addSearchHTML() {
+      (0, _jquery.default)("body").append("\n      <div class=\"search-overlay\">\n        <div class=\"search-overlay__top\">\n          <div class=\"container\">\n            <i class=\"fa fa-search search-overlay__icon\" aria-hidden=\"true\"></i>\n            <input type=\"text\" class=\"search-term\" placeholder=\"What are you looking for?\" id=\"search-term\">\n            <i class=\"fa fa-window-close search-overlay__close\" aria-hidden=\"true\"></i>\n          </div>\n        </div>\n        \n        <div class=\"container\">\n          <div id=\"search-overlay__results\"></div>\n        </div>\n      </div>\n    ");
     }
   }]);
 
