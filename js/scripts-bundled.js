@@ -13768,14 +13768,17 @@ function () {
 
   }, {
     key: "deleteNote",
-    value: function deleteNote() {
+    value: function deleteNote(e) {
+      var thisNote = (0, _jquery.default)(e.target).parents("li");
+
       _jquery.default.ajax({
         beforeSend: function beforeSend(xhr) {
           xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
         },
-        url: universityData.root_url + '/wp-json/wp/v2/note/79',
+        url: universityData.root_url + '/wp-json/wp/v2/note/' + thisNote.data('id'),
         type: 'DELETE',
         success: function success(response) {
+          thisNote.slideUp();
           console.log("Congrats");
           console.log(response);
         },

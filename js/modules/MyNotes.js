@@ -10,14 +10,16 @@ class MyNotes {
   }
 
   // Methods will go here
-  deleteNote() {
+  deleteNote(e) {
+    var thisNote = $(e.target).parents("li");
     $.ajax({
       beforeSend: (xhr) => {
         xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
       },
-      url: universityData.root_url + '/wp-json/wp/v2/note/79',
+      url: universityData.root_url + '/wp-json/wp/v2/note/' + thisNote.data('id'),
       type: 'DELETE',
       success: (response) => {
+        thisNote.slideUp();
         console.log("Congrats");
         console.log(response);
       },
